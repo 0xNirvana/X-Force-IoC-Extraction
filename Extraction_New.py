@@ -109,3 +109,62 @@ def extract_susp_url(content):
                         counter += 1
                 return urls.replace(".", "[.]").replace("http", "hxxp"), counter
         return None, counter
+
+# Function to extract requried data from json file
+def data_extraction(file_name):
+        # Opening json file and converting it's content to string format
+        file_obj = open(file_name, 'r', encoding="utf8")
+        content = file_obj.readlines()
+        content = str(content)
+        print ("[+] Extracting From", file_name)
+
+        # Capturing Threat Name
+        threat_name=extract_threat_name(content)
+        print ("[+]THREAT NAME: ", threat_name)
+
+        # Capturing Threat Type
+        print ("Threat Type: ", end=" ")
+        threat_type=extract_threat_type(content)
+        if threat_type is None:
+            print ("PLEASE CHECK THE WEBPAGE FOR THIS FIELD!")
+        else:
+            print (threat_type)
+
+        # Capturing Threat Description
+        print ("Threat Description: ", end=" ")
+        threat_desc=extract_threat_desc(content)
+        if threat_desc is None:
+            print ("PLEASE CHECK THE WEBPAGE FOR THIS FIELD!")
+        else:
+            print (threat_desc)
+
+        # Capturing Related Vulnerabilities and print it's count
+        print ("Vulnerabilities: ", end=" ")
+        rel_vuln, vuln_count=extract_rel_vuln(content)
+        print (vuln_count)
+
+        # Creating Reference Link
+        print ("Reference Link: ", end=" ")
+        collection_id=extract_coll_id(content)
+        ref_url= "https://exchange.xforce.ibmcloud.com/collection/" + threat_name.replace(" ", "-") + "-" + collection_id
+        print (ref_url)
+
+        # Capturing Related Suspicious IP's and print it's count
+        print ("Suspicious IP's: ", end=" ")
+        susp_ip, ip_count=extract_susp_ip(content)
+        print (ip_count)
+
+        # Capturing Related Suspicious IP's and print it's count
+        print ("Suspicious URL's: ", end=" ")
+        susp_url, url_count=extract_susp_url(content)
+        print (url_count)
+
+        # Capturing Suspicious Hashes and print it's count
+        print ("Suspicious Hashes: ", end=" ")
+        susp_hash, hash_count=extract_susp_hash(content)
+        print (hash_count)
+
+        # Retreiving Today's Date and appending all the captured data to a row in the CSV file
+        now = datetime.now()
+        row_content=[now.strftime("%d-%m-%Y"), threat_name, threat_type, threat_desc, rel_vuln, ref_url, susp_ip, susp_url, susp_hash]
+        append_as_row(output_file, row_content)
