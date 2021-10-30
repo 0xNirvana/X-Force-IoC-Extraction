@@ -8,8 +8,8 @@
 # Steps to build exeutable file:
 # 1. If there is indentation problem, open file in IDLE and select Format --> Untabify Region after selecting the entire script.
 # 2. Open PowerShell and run the command:
-#     pip/3 install colorama
-#     pyinstaller.exe --onefile --console --hidden-import colorama IOC_Extraction.py
+# 3.  pip/3 install colorama
+# 4.  pyinstaller.exe --onefile --console --hidden-import colorama IOC_Extraction.py
 
 import sys
 import re
