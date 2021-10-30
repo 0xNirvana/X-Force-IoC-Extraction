@@ -1,5 +1,5 @@
 # FROM OLP
-
+#
 # To run the script:
 # Place all the json files from which data is to be extracted and this script in the same folder
 # When script is executed the count for all IP's, URL's and hashes is printed which can be compared
@@ -49,12 +49,12 @@ def append_as_row(file_name, content):
                 write_job = csv.writer(write_obj)
                 write_job.writerow(content)
 
-# Function to extract Threat Name
+# Function to extract Threat Name.
 def extract_threat_name(content):
         t_name=re.search(r'"collectionTitle":"([^"]*)"', content).group(1)
         return t_name
 
-# Function to extract Threat Type
+# Function to extract Threat Type.
 def extract_threat_type(content):
         t_type=re.search(r"Threat Type\\\\n(.*?)\\\\nOverview", content)
         if t_type:
