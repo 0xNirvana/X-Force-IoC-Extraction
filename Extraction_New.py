@@ -60,3 +60,52 @@ def extract_threat_type(content):
         if t_type:
             return t_type.group(1)
         return None
+
+# Function to extact Threat Description
+def extract_threat_desc(content):
+        t_desc=re.search(r"Summary\\\\n(.*?)\\\\nThreat", content)
+        if t_desc:
+            return t_desc.group(1)
+        return None
+
+# Function to extract Collection ID for generating URL
+def extract_coll_id(content):
+        c_id=re.search(r'"collectionId":"([^"]*)"', content).group(1)
+        return c_id
+
+# Function to extract Related Vulnerabilities
+def extract_rel_vuln(content):
+        r_vuln=re.findall(r'"external_id":"([^"]*)"', content)
+        vulns=""
+        counter = 0
+        if r_vuln:
+                for i in range(len(r_vuln)):
+                        vulns = vulns + r_vuln[i] + "\n"
+                        counter += 1
+                return vulns, counter
+        return None, counter
+
+# Function to extract Suspicious IP's
+def extract_susp_ip(content):
+        s_ip=re.findall("IP address ((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))", content)
+        # s_ip=re.findall("((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))", content)
+        ips =""
+        counter = 0
+        if s_ip:
+                for i in range(len(s_ip)):
+                        ips = ips + (s_ip[i][0]) + "\n"
+                        counter += 1
+                return ips.replace(".", "[.]"), counter
+        return None, counter
+
+# Function to extract Suspicious URL's
+def extract_susp_url(content):
+        s_url=re.findall("URL Report for ([^\"]*)", content)
+        urls=""
+        counter = 0
+        if s_url:
+                for i in range(len(s_url)):
+                        urls = urls + s_url[i] + "\n"
+                        counter += 1
+                return urls.replace(".", "[.]").replace("http", "hxxp"), counter
+        return None, counter
