@@ -110,6 +110,36 @@ def extract_susp_url(content):
                 return urls.replace(".", "[.]").replace("http", "hxxp"), counter
         return None, counter
 
+# Function to extract Suspicious Hashes
+def extract_susp_hash(content):
+        hashes=""
+        counter = 0
+
+        # Extracting SHA-256 hashes
+        sha256 = re.findall("\"name\":\"File hash indicator for sha256 hash (.{64})", content)
+        if sha256:
+                for i in range(len(sha256)):
+                        hashes = hashes + sha256[i] + "\n"
+                        counter += 1
+
+        # Extracting MD5 hashes
+        md5 = re.findall("file:hashes.MD5 = (.{34})", content)
+        if md5:
+                for i in range(len(md5)):
+                        hashes = hashes + md5[i] + "\n"
+                        counter += 1
+
+        # Extracting SHA1 hashes
+        sha1 = re.findall("\"name\":\"File hash indicator for sha1 hash (.{40})", content)
+        if sha1:
+                for i in range(len(sha1)):
+                        hashes = hashes + sha1[i] + "\n"
+                        counter += 1
+
+        if hashes:
+                return hashes.replace("\\'", ""), counter
+        return None, counter
+
 # Function to extract requried data from json file
 def data_extraction(file_name):
         # Opening json file and converting it's content to string format
@@ -168,3 +198,34 @@ def data_extraction(file_name):
         now = datetime.now()
         row_content=[now.strftime("%d-%m-%Y"), threat_name, threat_type, threat_desc, rel_vuln, ref_url, susp_ip, susp_url, susp_hash]
         append_as_row(output_file, row_content)
+
+#Main function
+def main():
+        directory = '.'
+        # Check if output.csv exists and to clear it
+        output_check()
+        # Add Header
+        csv_head=["Date", "Threat Name", "Threat Type", "Threat Description", "Releated Vulnerabilities", "Reference Link", "Suspicious IP's", "Suspicious URL's", "Suspicious Hashes"]
+        append_as_row(output_file, csv_head)
+        # Capture all the .json files in current directory
+        files = list_files(directory)
+        color_count = 0
+        for f in files:
+                try:
+                    if (color_count % 2 == 0):
+                        print (Fore.GREEN, Style.BRIGHT)
+                    else:
+                        print (Fore.MAGENTA, Style.BRIGHT)
+                    data_extraction(f)
+                    print (Style.RESET_ALL)
+                except Exception as e:
+                        print (Fore.RED)
+                        print ("There is some issue with the file: " + f)
+                        print (e)
+                        print ("Contact Nishant Tayade with the file that caused the issue and the error displayed.")
+                        print (Style.RESET_ALL)
+                color_count += 1
+
+        input ("Enter any key to exit")
+
+main()
