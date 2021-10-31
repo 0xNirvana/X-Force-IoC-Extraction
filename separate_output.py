@@ -64,3 +64,50 @@ def outputFileCheck():
 		print("[+] Contents of " + opHash + " cleared.")
 	csvHeadHash = ["Collection Name", "Hash Value"]
 	append_as_row(opHash, csvHeadHash)
+
+def append_as_row(file, content):
+	with open(file, 'a+', newline="") as write_job:
+		write_job = csv.writer(write_job)
+		write_job.writerow(content)
+
+def addIP(ip, title):
+	global countIP
+	ip = ip.replace(".", "[.]").replace("'","")
+	row_content = [title, ip]
+	append_as_row(opIP, row_content)
+	countIP+=1
+	
+def addURL(url, title):
+	global countURL
+	url = url.replace(".", "[.]").replace("http", "hxxp").replace("'","")
+	row_content = [title, url]
+	append_as_row(opURL, row_content)
+	countURL+=1
+
+def addHash(hash, title):
+	global countHash
+	hash = hash.replace("'","")
+	row_content = [title, hash]
+	append_as_row(opHash, row_content)
+	countHash+=1
+
+def iocExtraction(file):
+	f = open(file, encoding="utf-8",)
+	data = json.load(f)
+	collectionTitle = data["custom_objects"][0]["collectionTitle"]
+	for i in data["objects"]:
+		if (i["type"] == "indicator") and ("pattern" in i):
+			identifier = i["pattern"].split(" ")[1]
+			if identifier == "ipv4-addr:value":
+				addIP(i["pattern"].split(" ")[3], collectionTitle)
+			elif identifier == "file:hashes.MD5":
+				addHash(i["pattern"].split(" ")[3], collectionTitle)
+			elif identifier == "url:value":
+				addURL(i["pattern"].split(" ")[3], collectionTitle)
+		elif i["type"] == "report":
+			print("Collection Name: " + i["name"])
+		# else:
+		# 	print ("Some wierd shit at:" + str(count))
+
+def listFiles(dir):
+	return (f for f in os.listdir(dir) if f.endswith('.json'))
