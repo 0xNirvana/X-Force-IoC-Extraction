@@ -111,3 +111,35 @@ def iocExtraction(file):
 
 def listFiles(dir):
 	return (f for f in os.listdir(dir) if f.endswith('.json'))
+
+if __name__ == '__main__':
+	directory = '.'
+	outputFileCheck()
+	files = listFiles(directory)
+	color_count = 0
+	for f in files:
+		# print (f)
+		try:
+			if (color_count % 2 == 0):
+				print(Fore.GREEN, Style.BRIGHT)
+			else:
+				print (Fore.MAGENTA, Style.BRIGHT)
+			iocExtraction(f)
+			print ("URL Count: " + str(countURL))
+			print ("IP Count: " + str(countIP))
+			print ("Hash Count: " + str(countHash))
+			countHash = countIP = countURL = 0
+			print (Style.RESET_ALL)
+		except  Exception as e:
+			print (Fore.RED)
+			print ("There is some issue with the file: " + f)
+			print (e)
+			print ("Contact Nishant Tayade with the file that caused the issue and the error displayed.")
+			print (Style.RESET_ALL)
+		color_count += 1
+	
+	# print ("URL Count: " + str(countURL))
+	# print ("IP Count: " + str(countIP))
+	# print ("Hash Count: " + str(countHash))
+
+	input("Enter any key to exit!")
